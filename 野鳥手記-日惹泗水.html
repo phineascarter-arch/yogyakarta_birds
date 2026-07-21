@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>野鳥手記 · 日惹｜泗水</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101b1a;
+    --bg-2:#0b1413;
+    --paper:#f4ecda;
+    --paper-2:#eee2c4;
+    --paper-line:#d9cba3;
+    --ink:#2b2018;
+    --ink-soft:#5b4d3d;
+    --merapi:#c1592f;
+    --merapi-deep:#7a3319;
+    --merapi-soft:#f0d9c9;
+    --wonorejo:#2f8f7c;
+    --wonorejo-deep:#1c5c50;
+    --wonorejo-soft:#d7ece6;
+    --singapore:#8a5cb8;
+    --singapore-deep:#5a3a80;
+    --singapore-soft:#e8dff2;
+    --gold:#d1a54e;
+    --muted:#8a9a95;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(193,89,47,0.10), transparent 60%),
+      radial-gradient(1200px 700px at 90% 10%, rgba(47,143,124,0.12), transparent 55%),
+      var(--bg);
+    color:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+
+  /* header */
+  header{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:14px;
+    border-bottom:1px solid rgba(244,236,218,0.18);
+    padding-bottom:18px;margin-bottom:22px;
+  }
+  .title-block .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold);margin:0 0 6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;font-weight:600;
+    font-size:clamp(28px,4.5vw,40px);
+    margin:0;line-height:1.05;color:var(--paper);
+  }
+  h1 em{font-style:italic;font-weight:500;color:var(--gold);}
+  .daybadge{
+    font-family:'IBM Plex Mono', monospace;
+    background:var(--bg-2);
+    border:1px solid rgba(244,236,218,0.22);
+    border-radius:999px;
+    padding:8px 16px;font-size:13px;color:var(--paper);
+    white-space:nowrap;
+  }
+  .daybadge b{color:var(--gold);font-weight:600;}
+
+  /* zone tabs */
+  .tabs{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+  .tab{
+    flex:1 1 220px;
+    cursor:pointer;
+    border-radius:12px;
+    padding:14px 16px;
+    border:1px solid rgba(244,236,218,0.18);
+    background:rgba(255,255,255,0.02);
+    transition:all .18s ease;
+    display:flex;align-items:center;gap:10px;
+  }
+  .tab .ic{font-size:22px;}
+  .tab .txt b{display:block;font-size:15px;color:var(--paper);}
+  .tab .txt span{display:block;font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+  .tab.active{border-color:transparent;}
+  .tab[data-zone="merapi"].active{background:linear-gradient(135deg, var(--merapi), var(--merapi-deep));}
+  .tab[data-zone="wonorejo"].active{background:linear-gradient(135deg, var(--wonorejo), var(--wonorejo-deep));}
+  .tab[data-zone="singapore"].active{background:linear-gradient(135deg, var(--singapore), var(--singapore-deep));}
+  .tab.active .txt b, .tab.active .txt span{color:#fff;}
+
+  /* today section */
+  .today-head{
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;
+    margin-bottom:14px;
+  }
+  .today-head h2{
+    font-family:'Fraunces', serif;font-weight:600;font-size:20px;margin:0;color:var(--paper);
+  }
+  .today-head .datestr{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media (max-width:760px){.cards{grid-template-columns:1fr;}}
+
+  .card{
+    perspective:1200px;height:260px;
+  }
+  .card-inner{
+    position:relative;width:100%;height:100%;
+    transform-style:preserve-3d;
+    transition:transform .55s cubic-bezier(.4,.2,.2,1);
+    border-radius:var(--radius);
+  }
+  .card.flipped .card-inner{transform:rotateY(180deg);}
+  .face{
+    position:absolute;inset:0;
+    border-radius:var(--radius);
+    backface-visibility:hidden;
+    background:var(--paper);
+    color:var(--ink);
+    padding:18px;
+    display:flex;flex-direction:column;
+    box-shadow:0 10px 24px rgba(0,0,0,.28);
+    border:1px solid var(--paper-line);
+  }
+  .face.back{transform:rotateY(180deg);background:var(--paper-2);}
+
+  .card-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px;
+    display:inline-flex;align-self:flex-start;margin-bottom:10px;
+  }
+  .zone-merapi .card-tag{background:var(--merapi-soft);color:var(--merapi-deep);}
+  .zone-wonorejo .card-tag{background:var(--wonorejo-soft);color:var(--wonorejo-deep);}
+  .zone-singapore .card-tag{background:var(--singapore-soft);color:var(--singapore-deep);}
+
+  .card-name{
+    font-family:'Fraunces', serif;font-weight:600;font-size:20px;line-height:1.25;
+    flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;
+  }
+  .sci-name{
+    font-family:'Fraunces', serif;font-weight:500;font-style:italic;font-size:13px;
+    color:var(--ink-soft);
+  }
+  .card-foot{display:flex;gap:8px;margin-top:10px;}
+  .btn{
+    font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;font-weight:600;
+    border:none;border-radius:8px;padding:9px 10px;cursor:pointer;
+    flex:1;text-align:center;transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{transform:scale(.96);}
+  .btn-flip{background:rgba(43,32,24,0.08);color:var(--ink);}
+  .btn-learn{background:var(--ink);color:var(--paper);}
+  .btn-learn.done{background:var(--gold);color:#3a2a08;}
+
+  .note{font-size:13px;line-height:1.5;color:var(--ink-soft);flex:1;}
+  .linkrow{display:flex;gap:6px;margin-top:10px;}
+  .linkrow a{
+    flex:1;text-align:center;font-size:10.5px;font-family:'IBM Plex Mono',monospace;
+    text-decoration:none;padding:7px 3px;border-radius:8px;
+    border:1px solid var(--paper-line);color:var(--ink-soft);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .linkrow a:hover{background:rgba(43,32,24,0.06);}
+
+  .stamp{
+    position:absolute;top:10px;right:10px;
+    width:52px;height:52px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:10px;
+    border:2px solid;transform:rotate(-14deg) scale(0);
+    opacity:0;transition:all .35s cubic-bezier(.2,1.4,.4,1);
+    text-align:center;line-height:1.1;letter-spacing:.03em;
+  }
+  .zone-merapi .stamp{color:var(--merapi);border-color:var(--merapi);}
+  .zone-wonorejo .stamp{color:var(--wonorejo);border-color:var(--wonorejo);}
+  .zone-singapore .stamp{color:var(--singapore);border-color:var(--singapore);}
+  .card.learned .stamp{transform:rotate(-14deg) scale(1);opacity:.9;}
+
+  /* controls */
+  .controls{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+  .ctrl-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;
+    background:rgba(255,255,255,0.04);border:1px solid rgba(244,236,218,0.2);
+    color:var(--paper);padding:10px 16px;border-radius:10px;cursor:pointer;
+  }
+  .ctrl-btn:hover{background:rgba(255,255,255,0.09);}
+
+  /* progress */
+  .progress-wrap{margin-top:30px;padding-top:20px;border-top:1px solid rgba(244,236,218,0.18);}
+  .progress-label{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:8px;}
+  .progress-bar{height:8px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden;}
+  .progress-fill{height:100%;border-radius:999px;transition:width .4s ease;}
+  .zone-merapi-bg .progress-fill{background:linear-gradient(90deg,var(--merapi),var(--gold));}
+  .zone-wonorejo-bg .progress-fill{background:linear-gradient(90deg,var(--wonorejo),var(--gold));}
+  .zone-singapore-bg .progress-fill{background:linear-gradient(90deg,var(--singapore),var(--gold));}
+
+  footer{margin-top:40px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <p class="eyebrow">野島方舟 · Field Journal</p>
+      <h1>野鳥手記 <em>· 日惹｜泗水</em></h1>
+    </div>
+    <div class="daybadge">旅程第 <b id="dayNum">1</b> 天 · <span id="dateStr"></span></div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab" data-zone="merapi">
+      <div class="ic">🌋</div>
+      <div class="txt"><b>日惹．默拉皮火山林</b><span id="merapiCount">0 / 0 種已學會</span></div>
+    </div>
+    <div class="tab" data-zone="wonorejo">
+      <div class="ic">🦩</div>
+      <div class="txt"><b>泗水．Wonorejo 紅樹林濕地</b><span id="wonorejoCount">0 / 0 種已學會</span></div>
+    </div>
+    <div class="tab" data-zone="singapore">
+      <div class="ic">🦁</div>
+      <div class="txt"><b>新加坡</b><span id="singaporeCount">0 / 0 種已學會</span></div>
+    </div>
+  </div>
+
+  <div class="today-head">
+    <h2>今日三鳥</h2>
+    <span class="datestr" id="todayLabel"></span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="btnReshuffle">🔀 換一組今日鳥種</button>
+    <button class="ctrl-btn" id="btnNextDay">➡️ 手動翻到下一天</button>
+    <button class="ctrl-btn" id="btnPrevDay">⬅️ 回顧前一天</button>
+  </div>
+
+  <div class="progress-wrap" id="progressZoneWrap">
+    <div class="progress-label"><span id="progressZoneName">日惹．默拉皮火山林</span><span id="progressZoneNum">0 / 0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressZoneFill" style="width:0%;"></div></div>
+  </div>
+
+  <footer>為前往日惹與泗水的賞鳥旅程而做 · 資料整理自 eBird 熱門鳥點名錄 · 進度儲存在本機瀏覽器中</footer>
+</div>
+
+<script>
+/* ---------------- 鳥種資料（來自 eBird 熱點清單） ---------------- */
+const MERAPI = ["Cave Swiftlet","林鵰","白尾八哥","大冠鷲","洋燕","Javan Fulvetta","Blue Nuthatch","亞洲輝椋鳥","八聲杜鵑","Sunda Brush Cuckoo","珠頸斑鳩","斑馬鳩","方尾烏鵑","Javan Frogmouth","Coppersmith Barbet","Black-banded Barbet","Flame-fronted Barbet","小鷦眉","Yellow-vented Bulbul","Horsfield's Babbler","Orange-bellied Flowerpecker","黃腹花蜜鳥","Common Iora","Olive-backed Tailorbird","Javan Munia","灰卷尾","Javan Bulbul","Ruddy Cuckoo-Dove","黃鸝","Javan Black-capped Babbler","斑文鳥","Black-naped Fruit-Dove","長尾縫葉鶯","白領翡翠","Mangrove Whistler","翠翼鳩","Javan Sunbird","Banded Bay Cuckoo","小雨燕","Freckle-breasted Woodpecker","大卷尾","Yellow-bellied Warbler","Crescent-chested Babbler","Scarlet-headed Flowerpecker","Small Minivet","褐翅鴉鵑","Red-breasted Parakeet","赤紅山椒鳥","Racket-tailed Treepie","Striated Grassbird","Lineated Barbet","斑尾鵑鳩","Black-winged Flycatcher-shrike","白頰山雀","Velvet-fronted Nuthatch","寬嘴鶲","Little Spiderhunter","Mountain Leaf Warbler","Javan Flowerpecker","Malaysian Pied-Fantail","白喉短翅鶇","Sunda Pygmy Woodpecker","Green Junglefowl","White-crowned Forktail","Chestnut-breasted Malkoha","Yellow-eared Barbet","Red-billed Malkoha","噪鵑","Changeable Hawk-Eagle","Blyth's Paradise-Flycatcher","Sunda Crow","極北柳鶯","Short-tailed Starling","Lesser Cuckooshrike","Pied Shrike-Babbler","Indigo Flycatcher","遊隼","Sunda Minivet","東方蜂鷹","白腹琉璃","Javan Hawk-Eagle","Gray-rumped Treeswift","Spotted Kestrel","Brown-throated Sunbird","Pink-headed Fruit-Dove","Olive-winged Bulbul","Mountain Tailorbird","Sunda Cuckoo","番鵑","鳳頭蒼鷹","花翅山椒鳥","黑原鵑鵙","Steppe Eagle","黑枕藍鶲","麻雀","Black-nest Swiftlet","Golden-bellied Gerygone","Chestnut-capped Babbler","Ruby-cheeked Sunbird","Chestnut-headed Bee-eater","Small Blue Kingfisher","Rufous-tailed Fantail","Javan Tesia","Fulvous-chested Jungle Flycatcher","白斑紫嘯鶇","綠啄花","Wedge-tailed Green-Pigeon","Sunda Warbler","Pygmy Tit","Gray-cheeked Tit-Babbler","棕三趾鶉","白頭文鳥","Sunda Cuckooshrike","白燕窩金絲燕","Crimson-winged Woodpecker","白胸燕鵙","東方金腰燕","紅原雞","原鴿","Little Cuckoo-Dove","Dark-backed Imperial-Pigeon","Checker-throated Woodpecker","東方毛腳燕","White-breasted Babbler","Eyebrowed Wren-Babbler","Brown Prinia","家燕","灰鶺鴒","爪哇池鷺","黃頭鷺","褐頭鷦鶯","Little Pied Flycatcher","Salvadori's Nightjar","白腹秧雞","Trilling Shrike-Babbler","方尾鶲","栗鳶","佛法僧","灰頭鷦鶯","白眉黃鶲","黃胸青鶲","虎斑地鶇","Sunda Collared-Dove","Pink-necked Green-Pigeon","Pied Imperial-Pigeon","魚鷹","松雀鷹","白眉地鶇","Rufous-chested Flycatcher","Long-billed Spiderhunter","赤腹鷹","北椋鳥","Bar-winged Prinia","Black-headed Bulbul","烏鶲","Lesser Racket-tailed Drongo","Javan Shortwing","Javan Bush Warbler","Aberrant Bush Warbler","Sundaic Island-Thrush","南亞夜鷹","栗小鷺","小白鷺","綠簑鷺","稻田鷚","叉尾雨燕","Javan Flameback","White-bellied Woodpecker","Black-thighed Falconet","Greater Racket-tailed Drongo","Cream-vented Bulbul","Crimson Sunbird","Tawny-breasted Parrotfinch","磯鷸","赤足鷸","蒼鷺","Wreathed Hornbill","東方大葦鶯","Pale Blue Flycatcher","巨嘴鴉","Rufous-backed Dwarf-Kingfisher","Common Flameback","Rufous Piculet","Streaky-breasted Spiderhunter","Violet Cuckoo","白尾熱帶鳥","白眉燕鷗","翻石鷸","Asian Palm Swift","Wandering Whistling-Duck","Gray-headed Fish-Eagle"];
+
+const WONOREJO = ["紅冠水雞","黑領高蹺鴴","Javan Plover","鷹斑鷸","中杓鷸","黑腹燕鷗","Australasian Grebe","Oriental Darter","Little Cormorant","Little Black Cormorant","夜鷺","大白鷺","紫鷺","栗喉蜂虎","Sacred Kingfisher","White-shouldered Triller","棕扇尾鶯","Clamorous Reed Warbler","鷗嘴燕鷗","白翅黑燕鷗","小鳳頭燕鷗","鳳頭燕鷗","黃小鷺","中白鷺","Blue-eared Kingfisher","小燕鷗","太平洋金斑鴴","四聲杜鵑","長趾濱鷸","紅胸濱鷸","燕鷗","小蝗鶯","青藏鴴","東方環頸鴴","小青足鷸","青足鷸","彎嘴濱鷸","黃頭扇尾鶯","彩鷸","Little Pied Cormorant","東方黃鶺鴒","小環頸鴴","大杓鷸","斑尾鷸","蒼燕鷗","Sunda Teal","灰斑鴴","黑尾鷸","翠鳥","寬嘴鷸","蒙古鴴","灰胸秧雞","鐵嘴鴴","尖尾濱鷸","三趾濱鷸","白眉秧雞","緋秧雞","小鸊鷉","冠郭公","Great-billed Heron","黃足鷸","橙胸綠鳩","黑翅鳶","Gray-cheeked Green-Pigeon","黦鷸","水雉","小杓鷸","反嘴鷸","燕鴴","白腰燕鷗","烏領燕鷗","Lesser Adjutant","白斑軍艦鳥","白腹海鵰","Streaked Weaver","Ashy Tailorbird","Baya Weaver","岩鷺","Red Avadavat","樹鴨","Pacific Black Duck","軍艦鳥"];
+
+const SINGAPORE = ["White-crested Laughingthrush","Asian Openbill","Oriental Pied-Hornbill","藍喉蜂虎","蒼翡翠","Pin-striped Tit-Babbler","鵲鴝","斯氏繡眼(綠繡眼)","Chestnut-bellied Malkoha","Plume-toed Swiftlet","Banded Woodpecker","Blue-rumped Parrot","Long-tailed Parakeet","Blue-crowned Hanging-Parrot","Dark-necked Tailorbird","九官鳥","Little Bronze-Cuckoo","Stork-billed Kingfisher","黑頭文鳥","紅耳鵯","紅腳秧雞","Laced Woodpecker","Scarlet-backed Flowerpecker","Abbott's Babbler","Copper-throated Sunbird","家八哥","Large-tailed Nightjar","Milky Stork","Painted Stork","白腰鵲鴝","Rufous Woodpecker","Spotted Wood-Owl","Red-wattled Lapwing","Buffy Fish-Owl","紅鳩","Golden-backed Weaver","領角鴞","Green Imperial-Pigeon","Red-eyed Bulbul","白喉紅臀鵯","棕背伯勞","Rufous-tailed Tailorbird","Asian Fairy-bluebird","藍翅八色鳥","Mangrove Pitta","高蹺鴴","Malaysian Plover","Red-crowned Barbet","厚嘴綠鳩","白鶺鴒","Brown Boobook","赤翡翠","Blue-winged Leafbird","Short-tailed Babbler","Malaysian Hawk-Cuckoo","藍磯鶇","Mangrove Blue Flycatcher","Chestnut-winged Babbler","Barred Eagle-Owl","董雞","Rufous-bellied Eagle","Jambu Fruit-Dove","Fiery Minivet","小鵪鶉","印度池鷺","紅尾伯勞","池鷺","黃頸黑鷺","White-chested Babbler","雙眉葦鶯","唐白鷺","鴉嘴卷尾","虎紋伯勞","綠胸八色鳥","黑冠麻鷺","綠畫眉","白眉鶲","白喉林鶲","秋小鷺","Mountain Imperial-Pigeon","Crimson-breasted Flowerpecker","紫綬帶","阿穆爾綬帶","小秧雞","藍歌鴝","日本松雀鷹","八色鳥","Stripe-throated Bulbul","白臉鴴","灰山椒鳥","紅喉鶲","針尾鷸","冠羽柳鶯","褐鷹鴞","田鷸","黑冠鵑隼","Jerdon's Baza","黑頭翡翠","黃眉柳鶯","庫頁島柳鶯","Cinnamon-headed Green-Pigeon","山鶺鴒","普通夜鷹","東方澤鵟","白喉針尾雨燕","灰喉針尾雨燕","矛斑蝗鶯","鷹鵑","綠背姬鶲","黑背三趾翠鳥","灰面鵟鷹","棕腹鷹鵑","橙頭地鶇","歐亞鵟","灰背椋鳥","黑喉鴝","黃眉黃鶲","小椋鳥","粉紅椋鳥","喜馬拉雅中杜鵑"];
+
+const ZONES = {
+  merapi:{ label:"日惹．默拉皮火山林", icon:"🌋", list:MERAPI },
+  wonorejo:{ label:"泗水．Wonorejo 紅樹林濕地", icon:"🦩", list:WONOREJO },
+  singapore:{ label:"新加坡", icon:"🦁", list:SINGAPORE }
+};
+
+/* ---------------- 學名對照表（盡力查證，少數印尼／爪哇特有種可能需要你用下方連結再次核對） ---------------- */
+const SCI = {
+"珠頸斑鳩":"Spilopelia chinensis","斑馬鳩":"Geopelia striata","八聲杜鵑":"Cacomantis merulinus","Cave Swiftlet":"Collocalia linchi",
+"小雨燕":"Apus nipalensis","紅冠水雞":"Gallinula chloropus","白腹秧雞":"Amaurornis phoenicurus","黑領高蹺鴴":"Himantopus himantopus",
+"Javan Plover":"Charadrius javanicus","中杓鷸":"Numenius phaeopus","黑腹燕鷗":"Chlidonias hybrida","Australasian Grebe":"Tachybaptus novaehollandiae",
+"Oriental Darter":"Anhinga melanogaster","Little Cormorant":"Microcarbo niger","Little Black Cormorant":"Phalacrocorax sulcirostris",
+"夜鷺":"Nycticorax nycticorax","小白鷺":"Egretta garzetta","綠簑鷺":"Butorides striatus","爪哇池鷺":"Ardeola speciosa","大白鷺":"Ardea alba",
+"紫鷺":"Ardea purpurea","栗喉蜂虎":"Merops philippinus","Small Blue Kingfisher":"Alcedo coerulescens","Sacred Kingfisher":"Todiramphus sanctus",
+"白領翡翠":"Todiramphus chloris","Freckle-breasted Woodpecker":"Dendrocopos analis","Golden-bellied Gerygone":"Gerygone sulphurea",
+"White-shouldered Triller":"Lalage sueurii","白胸燕鵙":"Artamus leucorynchus","Common Iora":"Aegithina tiphia","Malaysian Pied-Fantail":"Rhipidura javanica",
+"Racket-tailed Treepie":"Crypsirina temia","長尾縫葉鶯":"Orthotomus sutorius","灰頭鷦鶯":"Prinia flaviventris","褐頭鷦鶯":"Prinia inornata",
+"棕扇尾鶯":"Cisticola juncidis","Clamorous Reed Warbler":"Acrocephalus stentoreus","洋燕":"Hirundo tahitica","Yellow-vented Bulbul":"Pycnonotus goiavier",
+"白尾八哥":"Acridotheres javanicus","Brown-throated Sunbird":"Anthreptes malacensis","斑文鳥":"Lonchura punctulata","白頭文鳥":"Lonchura maja",
+"麻雀":"Passer montanus","Pink-necked Green-Pigeon":"Treron vernans","番鵑":"Centropus sinensis","鷗嘴燕鷗":"Gelochelidon nilotica",
+"白翅黑燕鷗":"Chlidonias leucopterus","小鳳頭燕鷗":"Thalasseus bengalensis","鳳頭燕鷗":"Thalasseus bergii","黃小鷺":"Ixobrychus sinensis",
+"中白鷺":"Ardea intermedia","Blue-eared Kingfisher":"Alcedo meninting","黑原鵑鵙":"Lalage nigra","Mangrove Whistler":"Pachycephala grisola",
+"Brown Prinia":"Prinia polychroa","東方金腰燕":"Cecropis striolata","Scarlet-headed Flowerpecker":"Dicaeum trochileum","黃腹花蜜鳥":"Cinnyris jugularis",
+"Sunda Collared-Dove":"Streptopelia bitorquata","Sunda Brush Cuckoo":"Cacomantis sepulcralis","南亞夜鷹":"Caprimulgus affinis","Javan Munia":"Lonchura leucogastroides",
+"叉尾雨燕":"Apus pacificus","小燕鷗":"Sternula albifrons","原鴿":"Columba livia","太平洋金斑鴴":"Pluvialis fulva","磯鷸":"Actitis hypoleucos",
+"鷹斑鷸":"Tringa glareola","Olive-backed Tailorbird":"Orthotomus sepium","四聲杜鵑":"Cuculus micropterus","長趾濱鷸":"Calidris subminuta",
+"紅胸濱鷸":"Calidris ruficollis","燕鷗":"Sterna hirundo","黃頭鷺":"Bubulcus ibis","小蝗鶯":"Locustella certhiola","青藏鴴":"Charadrius atrifrons",
+"東方環頸鴴":"Charadrius alexandrinus","小青足鷸":"Tringa stagnatilis","青足鷸":"Tringa nebularia","彎嘴濱鷸":"Calidris ferruginea",
+"黃頭扇尾鶯":"Cisticola exilis","褐翅鴉鵑":"Centropus bengalensis","彩鷸":"Rostratula benghalensis","Little Pied Cormorant":"Microcarbo melanoleucos",
+"蒼鷺":"Ardea cinerea","東方大葦鶯":"Acrocephalus orientalis","Striated Grassbird":"Megalurus palustris","家燕":"Hirundo rustica",
+"東方黃鶺鴒":"Motacilla tschutschensis","赤足鷸":"Tringa totanus","Sunda Pygmy Woodpecker":"Yungipicus moluccensis","小環頸鴴":"Charadrius dubius",
+"大杓鷸":"Numenius madagascariensis","斑尾鷸":"Limosa lapponica","蒼燕鷗":"Onychoprion anaethetus","Sunda Teal":"Anas gibberifrons",
+"灰斑鴴":"Pluvialis squatarola","黑尾鷸":"Limosa limosa","棕三趾鶉":"Turnix suscitator","白燕窩金絲燕":"Aerodramus fuciphagus","翠鳥":"Alcedo atthis",
+"Black-nest Swiftlet":"Aerodramus maximus","寬嘴鷸":"Calidris falcinellus","蒙古鴴":"Charadrius mongolus","灰胸秧雞":"Lewinia striata",
+"鐵嘴鴴":"Charadrius leschenaultii","尖尾濱鷸":"Calidris acuminata","三趾濱鷸":"Calidris alba","Small Minivet":"Pericrocotus cinnamomeus",
+"Pied Imperial-Pigeon":"Ducula bicolor","栗小鷺":"Ixobrychus cinnamomeus","白眉秧雞":"Poliolimnas cinereus","緋秧雞":"Zapornia fusca",
+"小鸊鷉":"Tachybaptus ruficollis","冠郭公":"Clamator coromandus","Great-billed Heron":"Ardea sumatrana","黃足鷸":"Tringa brevipes",
+"Red-breasted Parakeet":"Psittacula alexandri","大卷尾":"Dicrurus macrocercus","Chestnut-breasted Malkoha":"Phaenicophaeus curvirostris",
+"橙胸綠鳩":"Treron bicinctus","黑翅鳶":"Elanus caeruleus","Bar-winged Prinia":"Prinia familiaris","Gray-cheeked Green-Pigeon":"Treron griseicauda",
+"黦鷸":"Numenius arquata","Banded Bay Cuckoo":"Cacomantis sonneratii","水雉":"Hydrophasianus chirurgus","小杓鷸":"Numenius minutus",
+"反嘴鷸":"Recurvirostra avosetta","燕鴴":"Glareola maldivarum","白腰燕鷗":"Onychoprion aleuticus","烏領燕鷗":"Sterna sumatrana",
+"Lesser Adjutant":"Leptoptilos javanicus","白斑軍艦鳥":"Fregata andrewsi","白腹海鵰":"Haliaeetus leucogaster","Chestnut-headed Bee-eater":"Merops leschenaulti",
+"Coppersmith Barbet":"Psilopogon haemacephalus","Black-winged Flycatcher-shrike":"Hemipus hirundinaceus","綠啄花":"Dicaeum concolor",
+"Streaked Weaver":"Ploceus manyar","稻田鷚":"Anthus rufulus","Ashy Tailorbird":"Orthotomus ruficeps","Baya Weaver":"Ploceus philippinus",
+"Sunda Crow":"Corvus enca","岩鷺":"Egretta sacra","Red Avadavat":"Amandava amandava","巨嘴鴉":"Corvus macrorhynchos","東方蜂鷹":"Pernis ptilorhynchus",
+"樹鴨":"Dendrocygna javanica","Pacific Black Duck":"Anas superciliosa","軍艦鳥":"Fregata sp.","白頰山雀":"Parus cinereus",
+"林鵰":"Ictinaetus malaiensis","大冠鷲":"Spilornis cheela","Javan Fulvetta":"Alcippe pyrrhoptera","Blue Nuthatch":"Sitta azurea",
+"亞洲輝椋鳥":"Aplonis panayensis","方尾烏鵑":"Surniculus lugubris","Javan Frogmouth":"Batrachostomus javensis","Black-banded Barbet":"Psilopogon javensis",
+"Flame-fronted Barbet":"Psilopogon armillaris","小鷦眉":"Pnoepyga pusilla","Horsfield's Babbler":"Malacocincla sepiaria","Orange-bellied Flowerpecker":"Dicaeum trigonostigma",
+"灰卷尾":"Dicrurus leucophaeus","Javan Bulbul":"Ixos virescens","Ruddy Cuckoo-Dove":"Macropygia emiliana","黃鸝":"Oriolus chinensis",
+"Javan Black-capped Babbler":"Pellorneum capistratoides","Black-naped Fruit-Dove":"Ptilinopus melanospilus","Javan Sunbird":"Aethopyga mystacalis",
+"Yellow-bellied Warbler":"Abroscopus superciliaris","Crescent-chested Babbler":"Stachyris melanothorax","赤紅山椒鳥":"Pericrocotus flammeus",
+"Lineated Barbet":"Psilopogon lineatus","斑尾鵑鳩":"Macropygia unchall","Velvet-fronted Nuthatch":"Sitta frontalis","寬嘴鶲":"Myiagra ruficollis",
+"Little Spiderhunter":"Arachnothera longirostra","Mountain Leaf Warbler":"Phylloscopus trivirgatus","Javan Flowerpecker":"Dicaeum sanguinolentum",
+"白喉短翅鶇":"Brachypteryx leucophris","Green Junglefowl":"Gallus varius","White-crowned Forktail":"Enicurus leschenaulti",
+"Yellow-eared Barbet":"Psilopogon duvaucelii","Red-billed Malkoha":"Phaenicophaeus javanicus","噪鵑":"Eudynamys scolopaceus",
+"Changeable Hawk-Eagle":"Nisaetus cirrhatus","Blyth's Paradise-Flycatcher":"Terpsiphone affinis","極北柳鶯":"Phylloscopus borealis",
+"Short-tailed Starling":"Aplonis minor","Lesser Cuckooshrike":"Lalage fimbriata","Pied Shrike-Babbler":"Pteruthius flaviscapis","Indigo Flycatcher":"Eumyias indigo",
+"遊隼":"Falco peregrinus","Sunda Minivet":"Pericrocotus miniatus","白腹琉璃":"Cyanoptila cyanomelana","Javan Hawk-Eagle":"Nisaetus bartelsi",
+"Gray-rumped Treeswift":"Hemiprocne longipennis","Spotted Kestrel":"Falco moluccensis","Pink-headed Fruit-Dove":"Ptilinopus porphyreus",
+"Olive-winged Bulbul":"Pycnonotus plumosus","Mountain Tailorbird":"Phyllergates cucullatus","Sunda Cuckoo":"Cuculus lepidus","鳳頭蒼鷹":"Accipiter trivirgatus",
+"花翅山椒鳥":"Pericrocotus igneus","Steppe Eagle":"Aquila nipalensis","黑枕藍鶲":"Hypothymis azurea","Chestnut-capped Babbler":"Timalia pileata",
+"Ruby-cheeked Sunbird":"Chalcoparia singalensis","Rufous-tailed Fantail":"Rhipidura phoenicura","Javan Tesia":"Tesia superciliaris",
+"Fulvous-chested Jungle Flycatcher":"Cyornis olivaceus","白斑紫嘯鶇":"Myophonus glaucinus","Wedge-tailed Green-Pigeon":"Treron sphenurus",
+"Sunda Warbler":"Phylloscopus grammiceps","Pygmy Tit":"Psaltria exilis","Gray-cheeked Tit-Babbler":"Macronus flavicollis","Sunda Cuckooshrike":"Coracina larvata",
+"Crimson-winged Woodpecker":"Picus puniceus","紅原雞":"Gallus gallus","Little Cuckoo-Dove":"Macropygia ruficeps","Dark-backed Imperial-Pigeon":"Ducula lacernulata",
+"Checker-throated Woodpecker":"Chrysophlegma mentale","東方毛腳燕":"Delichon dasypus","White-breasted Babbler":"Stachyris grammiceps",
+"Eyebrowed Wren-Babbler":"Napothera epilepidota","灰鶺鴒":"Motacilla cinerea","Little Pied Flycatcher":"Ficedula westermanni","Salvadori's Nightjar":"Caprimulgus pulchellus",
+"Trilling Shrike-Babbler":"Pteruthius aenobarbus","方尾鶲":"Culicicapa ceylonensis","栗鳶":"Haliastur indus","佛法僧":"Eurystomus orientalis",
+"白眉黃鶲":"Ficedula zanthopygia","黃胸青鶲":"Cyornis banyumas","虎斑地鶇":"Zoothera dauma","魚鷹":"Pandion haliaetus","松雀鷹":"Accipiter virgatus",
+"白眉地鶇":"Turdus obscurus","Rufous-chested Flycatcher":"Ficedula dumetoria","Long-billed Spiderhunter":"Arachnothera robusta","赤腹鷹":"Accipiter soloensis",
+"北椋鳥":"Agropsar sturninus","Black-headed Bulbul":"Brachypodius atriceps","烏鶲":"Muscicapa sibirica","Lesser Racket-tailed Drongo":"Dicrurus remifer",
+"Javan Shortwing":"Brachypteryx montana","Javan Bush Warbler":"Locustella montis","Aberrant Bush Warbler":"Horornis flavolivaceus",
+"Sundaic Island-Thrush":"Turdus poliocephalus","Javan Flameback":"Chrysocolaptes strictus","White-bellied Woodpecker":"Dryocopus javensis",
+"Black-thighed Falconet":"Microhierax fringillarius","Greater Racket-tailed Drongo":"Dicrurus paradiseus","Cream-vented Bulbul":"Pycnonotus simplex",
+"Crimson Sunbird":"Aethopyga siparaja","Tawny-breasted Parrotfinch":"Erythrura hyperythra","Wreathed Hornbill":"Rhyticeros undulatus",
+"翠翼鳩":"Chalcophaps indica","Pale Blue Flycatcher":"Cyornis unicolor",
+"Rufous-backed Dwarf-Kingfisher":"Ceyx rufidorsa","Common Flameback":"Dinopium javanense","Rufous Piculet":"Sasia abnormis",
+"Streaky-breasted Spiderhunter":"Arachnothera affinis","Violet Cuckoo":"Chrysococcyx xanthorhynchus","白尾熱帶鳥":"Phaethon lepturus",
+"白眉燕鷗":"Onychoprion fuscatus","翻石鷸":"Arenaria interpres","Asian Palm Swift":"Cypsiurus balasiensis",
+"Wandering Whistling-Duck":"Dendrocygna arcuata","Gray-headed Fish-Eagle":"Icthyophaga ichthyaetus",
+"White-crested Laughingthrush":"Garrulax leucolophus","Asian Openbill":"Anastomus oscitans","Oriental Pied-Hornbill":"Anthracoceros albirostris",
+"藍喉蜂虎":"Merops viridis","蒼翡翠":"Halcyon pileata","Pin-striped Tit-Babbler":"Mixornis gularis","鵲鴝":"Copsychus saularis",
+"斯氏繡眼(綠繡眼)":"Zosterops simplex","Chestnut-bellied Malkoha":"Phaenicophaeus sumatranus","Plume-toed Swiftlet":"Collocalia affinis",
+"Banded Woodpecker":"Chrysophlegma miniaceum","Blue-rumped Parrot":"Psittinus cyanurus","Long-tailed Parakeet":"Psittacula longicauda",
+"Blue-crowned Hanging-Parrot":"Loriculus galgulus","Dark-necked Tailorbird":"Orthotomus atrogularis","九官鳥":"Gracula religiosa",
+"Little Bronze-Cuckoo":"Chrysococcyx minutillus","Stork-billed Kingfisher":"Pelargopsis capensis","黑頭文鳥":"Lonchura atricapilla",
+"紅耳鵯":"Pycnonotus jocosus","紅腳秧雞":"Rallina fasciata","Laced Woodpecker":"Picus vittatus","Scarlet-backed Flowerpecker":"Dicaeum cruentatum",
+"Abbott's Babbler":"Malacocincla abbotti","Copper-throated Sunbird":"Leptocoma calcostetha","Large-tailed Nightjar":"Caprimulgus macrurus",
+"Milky Stork":"Mycteria cinerea","Painted Stork":"Mycteria leucocephala","白腰鵲鴝":"Copsychus malabaricus","Rufous Woodpecker":"Micropternus brachyurus",
+"Spotted Wood-Owl":"Strix seloputo","Red-wattled Lapwing":"Vanellus indicus","Buffy Fish-Owl":"Ketupa ketupu","Golden-backed Weaver":"Ploceus hypoxanthus",
+"領角鴞":"Otus lettia","Green Imperial-Pigeon":"Ducula aenea","Red-eyed Bulbul":"Pycnonotus brunneus","白喉紅臀鵯":"Pycnonotus aurigaster",
+"棕背伯勞":"Lanius schach","Rufous-tailed Tailorbird":"Orthotomus sericeus","Asian Fairy-bluebird":"Irena puella","藍翅八色鳥":"Pitta moluccensis",
+"Mangrove Pitta":"Pitta megarhyncha","高蹺鴴":"Himantopus himantopus","Malaysian Plover":"Charadrius peronii","Red-crowned Barbet":"Psilopogon rafflesii",
+"厚嘴綠鳩":"Treron curvirostra","白鶺鴒":"Motacilla alba","Brown Boobook":"Ninox scutulata","赤翡翠":"Halcyon coromanda",
+"Blue-winged Leafbird":"Chloropsis cochinchinensis","Short-tailed Babbler":"Pellorneum malaccense","Malaysian Hawk-Cuckoo":"Hierococcyx fugax",
+"藍磯鶇":"Monticola solitarius","Mangrove Blue Flycatcher":"Cyornis rufigastra","Chestnut-winged Babbler":"Cyanoderma erythropterum",
+"Barred Eagle-Owl":"Bubo sumatranus","董雞":"Gallicrex cinerea","Rufous-bellied Eagle":"Lophotriorchis kienerii","Jambu Fruit-Dove":"Ptilinopus jambu",
+"Fiery Minivet":"Pericrocotus igneus","小鵪鶉":"Coturnix chinensis","印度池鷺":"Ardeola grayii","紅尾伯勞":"Lanius cristatus","池鷺":"Ardeola bacchus",
+"黃頸黑鷺":"Egretta gularis","White-chested Babbler":"Pellorneum rostratum","雙眉葦鶯":"Acrocephalus bistrigiceps","唐白鷺":"Egretta eulophotes",
+"鴉嘴卷尾":"Dicrurus annectens","虎紋伯勞":"Lanius tigrinus","綠胸八色鳥":"Pitta sordida","黑冠麻鷺":"Gorsachius melanolophus",
+"綠畫眉":"Alophoixus pallidus","白眉鶲":"Muscicapa dauurica","白喉林鶲":"Rhinomyias ruficauda","秋小鷺":"Ixobrychus eurhythmus",
+"Mountain Imperial-Pigeon":"Ducula badia","Crimson-breasted Flowerpecker":"Prionochilus percussus","紫綬帶":"Terpsiphone atrocaudata",
+"阿穆爾綬帶":"Terpsiphone incei","小秧雞":"Zapornia pusilla","藍歌鴝":"Larvivora cyane","日本松雀鷹":"Accipiter gularis","八色鳥":"Pitta nympha",
+"Stripe-throated Bulbul":"Pycnonotus finlaysoni","白臉鴴":"Charadrius dealbatus","灰山椒鳥":"Pericrocotus divaricatus","紅喉鶲":"Ficedula albicilla",
+"針尾鷸":"Gallinago stenura","冠羽柳鶯":"Phylloscopus coronatus","褐鷹鴞":"Ninox scutulata","田鷸":"Gallinago gallinago","黑冠鵑隼":"Aviceda leuphotes",
+"Jerdon's Baza":"Aviceda jerdoni","黑頭翡翠":"Halcyon pileata","黃眉柳鶯":"Phylloscopus inornatus","庫頁島柳鶯":"Phylloscopus borealoides",
+"Cinnamon-headed Green-Pigeon":"Treron fulvicollis","山鶺鴒":"Dendronanthus indicus","普通夜鷹":"Caprimulgus jotaka","東方澤鵟":"Circus spilonotus",
+"白喉針尾雨燕":"Hirundapus caudacutus","灰喉針尾雨燕":"Hirundapus cochinchinensis","矛斑蝗鶯":"Locustella lanceolata","鷹鵑":"Hierococcyx sparverioides",
+"綠背姬鶲":"Ficedula elisae","黑背三趾翠鳥":"Ceyx erithaca","灰面鵟鷹":"Butastur indicus","棕腹鷹鵑":"Hierococcyx nisicolor",
+"橙頭地鶇":"Geokichla citrina","歐亞鵟":"Buteo buteo","灰背椋鳥":"Sturnia sinensis","黑喉鴝":"Saxicola stejnegeri","黃眉黃鶲":"Ficedula narcissina",
+"小椋鳥":"Agropsar philippensis","粉紅椋鳥":"Pastor roseus","喜馬拉雅中杜鵑":"Cuculus saturatus",
+"家八哥":"Acridotheres tristis","紅鳩":"Streptopelia tranquebarica"
+};
+function sciNameOf(name){ return SCI[name] || ""; }
+
+/* ---------------- 依關鍵字給小知識 ---------------- */
+function fieldNote(name){
+  const rules = [
+    [/鷸|Sandpiper|Godwit|Curlew|Stint|Snipe|Tattler|Dowitcher/i, "岸鳥：長喙探入泥灘覓食，退潮時最容易大量出現。"],
+    [/鷺|Heron|Egret|Bittern/i, "鷺科：涉水靜立伺機獵食魚蝦，留意頸部瞬間伸縮的動作。"],
+    [/鴴|Plover/i, "鴴科：短喙圓頭，「奔跑—啄食—停頓」是牠們覓食的招牌節奏。"],
+    [/燕鷗|Tern|軍艦鳥|Frigatebird/i, "海鳥：飛行中俯衝入水捕魚，注意尾羽開叉與翼形。"],
+    [/鵯|Bulbul/i, "鵯科：群棲吵鬧，常常先聞其聲、再見其影。"],
+    [/鶲|Flycatcher/i, "鶲科：定點停棲，飛出捕蟲後常返回同一枝頭。"],
+    [/啄木鳥|Woodpecker|擬啄木鳥|Barbet|Piculet|Flameback/i, "啄木鳥／擬啄木科：先聽敲擊聲，往往比用眼睛找更快。"],
+    [/鷹|Eagle|鵟|Falcon|隼|鵰|Kite|Kestrel|Goshawk|Sparrowhawk/i, "猛禽：留意翱翔輪廓與翼形，先用望遠鏡掃視天空。"],
+    [/鳩|鴿|Dove|Pigeon/i, "鳩鴿科：注意頸羽花紋與獨特的叫聲節奏。"],
+    [/燕|Swallow|Swift|雨燕|金絲燕|Swiftlet|Needletail|Treeswift/i, "燕／雨燕科：飛行中捕食昆蟲，觀察飛行軌跡與尾叉。"],
+    [/文鳥|Munia|Weaver|雀|Sparrow|Avadavat|Parrotfinch/i, "梅花雀／文鳥科：常成群活動於草地、農田或蘆葦叢。"],
+    [/翡翠|Kingfisher/i, "翠鳥科：水邊枝頭定點守候，俯衝入水捕魚。"],
+    [/鶇|Thrush/i, "鶇科：常在地面翻找落葉層覓食，動作沉穩。"],
+    [/伯勞|Shrike/i, "伯勞科：性凶猛，常停在顯眼枝頭俯視獵物。"],
+    [/花蜜鳥|Sunbird|Flowerpecker|啄花/i, "食蜜鳥類：體型嬌小、色彩鮮豔，常繞花叢穿梭。"],
+    [/秧雞|Rail|Crake|Waterhen|Swamphen|Moorhen/i, "秧雞科：性隱密，常在草叢或蘆葦邊緣快速穿行。"],
+    [/鸚鵡|Parakeet|Hanging-Parrot|鳳頭鸚鵡|Cockatoo/i, "鸚鵡科：飛行時常發出尖銳叫聲，成對或小群活動。"],
+    [/夜鷹|Nightjar|Frogmouth/i, "夜行性鳥類：白天偽裝停棲，黃昏後才開始活動鳴叫。"],
+    [/鵑|Cuckoo|Malkoha|Koel|Coucal/i, "杜鵑科：叫聲極具辨識度，體態修長、尾羽常上翹。"],
+    [/椋鳥|Starling|Myna/i, "椋鳥科：常成群活動，適應力強，市區與農地都能見到。"],
+    [/鶯|Warbler|Prinia|Cisticola|Tesia|Tailorbird/i, "鶯科／扇尾鶯科：體型細小好動，多在草叢或灌叢間穿梭。"],
+    [/畫眉|Babbler|Fulvetta/i, "噪眉科：性隱密好群聚，常於林下灌叢翻找覓食。"],
+    [/鸛|Stork|Adjutant/i, "鸛科：大型涉禽，常見於濕地上空盤旋或涉水覓食。"]
+  ];
+  for(const [re, note] of rules){ if(re.test(name)) return note; }
+  return "仔細記錄牠的體型、顏色分布與叫聲特徵，回程後再對照圖鑑確認辨識。";
+}
+
+/* ---------------- 小工具：可重現的隨機挑選 ---------------- */
+function hashSeed(str){
+  let h = 1779033703 ^ str.length;
+  for(let i=0;i<str.length;i++){
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function(){
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
+function seededShuffle(arr, seed){
+  const rand = hashSeed(seed);
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(rand()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* ---------------- 狀態管理 ---------------- */
+const LS_LEARNED = z => `wia_learned_${z}`;
+const LS_START = "wia_start_date";
+const LS_DAYOFFSET = "wia_day_offset";
+const LS_ACTIVE_ZONE = "wia_active_zone";
+const LS_RESHUFFLE = z => `wia_reshuffle_${z}`;
+
+function getLearned(zone){
+  try{ return JSON.parse(localStorage.getItem(LS_LEARNED(zone))||"[]"); }catch(e){ return []; }
+}
+function setLearned(zone, arr){
+  localStorage.setItem(LS_LEARNED(zone), JSON.stringify(arr));
+}
+function toggleLearned(zone, name){
+  const arr = getLearned(zone);
+  const i = arr.indexOf(name);
+  if(i>=0) arr.splice(i,1); else arr.push(name);
+  setLearned(zone, arr);
+}
+
+function getStartDate(){
+  let d = localStorage.getItem(LS_START);
+  if(!d){
+    d = new Date().toISOString().slice(0,10);
+    localStorage.setItem(LS_START, d);
+  }
+  return d;
+}
+function todayStr(offsetDays){
+  const start = new Date(getStartDate()+"T00:00:00");
+  const real = new Date();
+  const realOffset = Math.floor((real - start) / 86400000);
+  const total = realOffset + offsetDays;
+  const d = new Date(start.getTime() + total*86400000);
+  return d.toISOString().slice(0,10);
+}
+function getDayOffset(){ return parseInt(localStorage.getItem(LS_DAYOFFSET)||"0",10); }
+function setDayOffset(v){ localStorage.setItem(LS_DAYOFFSET, String(v)); }
+
+function getActiveZone(){ return localStorage.getItem(LS_ACTIVE_ZONE) || "merapi"; }
+function setActiveZone(z){ localStorage.setItem(LS_ACTIVE_ZONE, z); }
+
+function getReshuffleSalt(zone, dateKey){
+  const key = LS_RESHUFFLE(zone)+"_"+dateKey;
+  return localStorage.getItem(key) || "0";
+}
+function bumpReshuffleSalt(zone, dateKey){
+  const key = LS_RESHUFFLE(zone)+"_"+dateKey;
+  const v = parseInt(localStorage.getItem(key)||"0",10) + 1;
+  localStorage.setItem(key, String(v));
+  return String(v);
+}
+
+/* ---------------- 選出今日三鳥 ---------------- */
+function pickToday(zone){
+  const dateKey = todayStr(getDayOffset());
+  const list = ZONES[zone].list;
+  const learned = getLearned(zone);
+  const remaining = list.filter(n => !learned.includes(n));
+  const pool = remaining.length >= 3 ? remaining : list;
+  const salt = getReshuffleSalt(zone, dateKey);
+  const shuffled = seededShuffle(pool, zone+"|"+dateKey+"|"+salt);
+  return { picks: shuffled.slice(0,3), dateKey, allDone: remaining.length===0 };
+}
+
+/* ---------------- 渲染 ---------------- */
+function updateCounts(){
+  Object.keys(ZONES).forEach(z=>{
+    const learned = getLearned(z).length;
+    const total = ZONES[z].list.length;
+    document.getElementById(z+"Count").textContent = `${learned} / ${total} 種已學會`;
+  });
+}
+
+function updateProgressBar(zone){
+  const learned = getLearned(zone).length;
+  const total = ZONES[zone].list.length;
+  const pct = Math.round((learned/total)*100);
+  document.getElementById("progressZoneName").textContent = ZONES[zone].label;
+  document.getElementById("progressZoneNum").textContent = `${learned} / ${total}`;
+  document.getElementById("progressZoneFill").style.width = pct+"%";
+  const wrap = document.getElementById("progressZoneWrap");
+  wrap.className = "progress-wrap zone-"+zone+"-bg";
+}
+
+function renderCards(){
+  const zone = getActiveZone();
+  const { picks, dateKey, allDone } = pickToday(zone);
+  document.getElementById("todayLabel").textContent = dateKey;
+  document.getElementById("dateStr").textContent = dateKey;
+  document.getElementById("dayNum").textContent = getDayOffset() + Math.floor((new Date() - new Date(getStartDate()+"T00:00:00"))/86400000) + 1;
+
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+
+  if(allDone){
+    container.innerHTML = `<div style="grid-column:1/-1;padding:30px;text-align:center;background:rgba(255,255,255,0.04);border-radius:14px;font-family:'Fraunces',serif;font-size:18px;">
+      🎉 這個熱點的鳥種你都學過一輪了！繼續換一組複習，或切換到另一個熱點吧。</div>`;
+    return;
+  }
+
+  const learned = getLearned(zone);
+
+  picks.forEach(name=>{
+    const isLearned = learned.includes(name);
+    const card = document.createElement("div");
+    card.className = "card zone-"+zone+(isLearned?" learned":"");
+
+    const sci = sciNameOf(name);
+    const searchKey = sci || name;
+    // eBird 會擋掉自動化工具直接驗證物種代碼（robots.txt），
+    // 所以這裡用「限定 ebird.org/species 網域」的搜尋，確保一定能連到正確頁面，不會因猜錯代碼而連結失敗。
+    const ebirdLink = `https://www.google.com/search?q=${encodeURIComponent('site:ebird.org/species "'+searchKey+'"')}`;
+    const photoLink = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(searchKey+' bird')}`;
+    const xeno = `https://xeno-canto.org/explore?query=${encodeURIComponent(searchKey)}`;
+
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="face front">
+          <span class="card-tag">${ZONES[zone].icon} ${zone==='merapi' ? '火山林' : zone==='wonorejo' ? '紅樹林' : '獅城'}</span>
+          <div class="card-name">${name}${sci ? `<span class="sci-name">${sci}</span>` : ""}</div>
+          <div class="card-foot">
+            <button class="btn btn-flip">翻面看筆記 →</button>
+            <button class="btn btn-learn ${isLearned?'done':''}">${isLearned?'✓ 已認識':'我認識了'}</button>
+          </div>
+          <div class="stamp">已<br>觀察</div>
+        </div>
+        <div class="face back">
+          <span class="card-tag">野外筆記</span>
+          <div class="note">${fieldNote(name)}</div>
+          <div class="linkrow">
+            <a href="${ebirdLink}" target="_blank" rel="noopener">🔗 eBird物種頁</a>
+            <a href="${photoLink}" target="_blank" rel="noopener">📷 照片</a>
+            <a href="${xeno}" target="_blank" rel="noopener">🔊 叫聲</a>
+          </div>
+          <div class="card-foot">
+            <button class="btn btn-flip">← 翻回正面</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const flips = card.querySelectorAll(".btn-flip");
+    flips.forEach(b=> b.addEventListener("click", ()=> card.classList.toggle("flipped")));
+
+    const learnBtn = card.querySelector(".btn-learn");
+    learnBtn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      toggleLearned(zone, name);
+      const nowLearned = getLearned(zone).includes(name);
+      card.classList.toggle("learned", nowLearned);
+      learnBtn.classList.toggle("done", nowLearned);
+      learnBtn.textContent = nowLearned ? "✓ 已認識" : "我認識了";
+      updateCounts();
+      updateProgressBar(zone);
+    });
+
+    container.appendChild(card);
+  });
+}
+
+function renderAll(){
+  const zone = getActiveZone();
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.classList.toggle("active", t.dataset.zone === zone);
+  });
+  updateCounts();
+  updateProgressBar(zone);
+  renderCards();
+}
+
+/* ---------------- 事件綁定 ---------------- */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    setActiveZone(tab.dataset.zone);
+    renderAll();
+  });
+});
+
+document.getElementById("btnReshuffle").addEventListener("click", ()=>{
+  const zone = getActiveZone();
+  const dateKey = todayStr(getDayOffset());
+  bumpReshuffleSalt(zone, dateKey);
+  renderCards();
+});
+
+document.getElementById("btnNextDay").addEventListener("click", ()=>{
+  setDayOffset(getDayOffset()+1);
+  renderAll();
+});
+document.getElementById("btnPrevDay").addEventListener("click", ()=>{
+  setDayOffset(Math.max(getDayOffset()-1, -3650));
+  renderAll();
+});
+
+getStartDate();
+renderAll();
+</script>
+</body>
+</html>
